@@ -16,8 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev]" -r services/fabric-admin-mcp/requirements.txt
       - run: npm install -g @microsoft/powerbi-report-authoring-cli@latest
       - shell: pwsh
         run: ./scripts/validate.ps1
-
