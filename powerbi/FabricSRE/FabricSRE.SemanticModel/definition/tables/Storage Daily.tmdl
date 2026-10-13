@@ -1,0 +1,53 @@
+table 'Storage Daily'
+
+	/// OneLake storage in gibibytes.
+	measure 'Storage GiB' = DIVIDE(SUM('Storage Daily'[StorageBytes]), 1073741824)
+		formatString: #,##0.00
+
+	/// Storage growth over 30 days.
+	measure 'Storage Growth 30D Percent' = ```
+			VAR _current = [Storage GiB]
+			VAR _previous =
+				CALCULATE(
+					[Storage GiB],
+					DATEADD(Date[Date], -30, DAY)
+				)
+			RETURN
+				DIVIDE(_current - _previous, _previous)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+
+	column SnapshotDate
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: SnapshotDate
+
+	column WorkspaceId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: WorkspaceId
+
+	column ItemId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: ItemId
+
+	column StorageBytes
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: StorageBytes
+
+	partition 'Storage Daily' = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Source{[Schema="dbo", Item="gold_storage_daily"]}[Data]
+			in
+				Data
+

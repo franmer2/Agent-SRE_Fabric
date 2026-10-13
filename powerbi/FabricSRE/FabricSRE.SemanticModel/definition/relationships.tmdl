@@ -1,0 +1,51 @@
+relationship 'Capacity Daily to Date'
+	fromColumn: 'Capacity Daily'.EventDate
+	toColumn: Date.Date
+
+relationship 'Capacity Daily to Capacity'
+	fromColumn: 'Capacity Daily'.CapacityId
+	toColumn: Capacity.CapacityId
+
+relationship 'Item Daily to Date'
+	fromColumn: 'Item Daily'.EventDate
+	toColumn: Date.Date
+
+relationship 'Item Daily to Capacity'
+	fromColumn: 'Item Daily'.CapacityId
+	toColumn: Capacity.CapacityId
+
+relationship 'Item Daily to Workspace'
+	fromColumn: 'Item Daily'.WorkspaceId
+	toColumn: Workspace.WorkspaceId
+
+relationship 'Item Daily to Item'
+	fromColumn: 'Item Daily'.ItemId
+	toColumn: Item.ItemId
+
+relationship 'Item Daily to Operation'
+	fromColumn: 'Item Daily'.OperationId
+	toColumn: Operation.OperationId
+
+relationship 'Refresh Daily to Date'
+	fromColumn: 'Refresh Daily'.EventDate
+	toColumn: Date.Date
+
+relationship 'Refresh Daily to Workspace'
+	fromColumn: 'Refresh Daily'.WorkspaceId
+	toColumn: Workspace.WorkspaceId
+
+relationship 'Refresh Daily to Item'
+	fromColumn: 'Refresh Daily'.ItemId
+	toColumn: Item.ItemId
+
+relationship 'Storage Daily to Date'
+	fromColumn: 'Storage Daily'.SnapshotDate
+	toColumn: Date.Date
+
+relationship 'Storage Daily to Workspace'
+	fromColumn: 'Storage Daily'.WorkspaceId
+	toColumn: Workspace.WorkspaceId
+
+relationship 'Storage Daily to Item'
+	fromColumn: 'Storage Daily'.ItemId
+	toColumn: Item.ItemId

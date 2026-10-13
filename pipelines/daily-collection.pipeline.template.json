@@ -1,0 +1,27 @@
+{
+  "name": "pl_fabric_sre_daily",
+  "parameters": {
+    "configurationPath": {
+      "type": "String",
+      "defaultValue": "/lakehouse/default/Files/fabric-sre/config/client.parameters.yaml"
+    }
+  },
+  "schedule": {
+    "frequency": "Day",
+    "interval": 1,
+    "startTimeLocal": "01:00"
+  },
+  "activities": [
+    { "name": "Bootstrap Lakehouse", "type": "Notebook", "notebook": "00_bootstrap_lakehouse" },
+    { "name": "Collect Inventory", "type": "Notebook", "notebook": "01_collect_inventory", "dependsOn": ["Bootstrap Lakehouse"] },
+    { "name": "Collect Activity", "type": "Notebook", "notebook": "02_collect_activity_events", "dependsOn": ["Bootstrap Lakehouse"] },
+    { "name": "Collect Capacity Metrics", "type": "Notebook", "notebook": "03_collect_capacity_metrics", "dependsOn": ["Bootstrap Lakehouse"] },
+    { "name": "Normalize Inventory", "type": "Notebook", "notebook": "04_normalize_inventory", "dependsOn": ["Collect Inventory"] },
+    { "name": "Build Gold", "type": "Notebook", "notebook": "05_build_gold", "dependsOn": ["Normalize Inventory", "Collect Activity", "Collect Capacity Metrics"] }
+  ],
+  "retryPolicy": {
+    "retry": 3,
+    "retryIntervalSeconds": 120,
+    "timeout": "02:00:00"
+  }
+}

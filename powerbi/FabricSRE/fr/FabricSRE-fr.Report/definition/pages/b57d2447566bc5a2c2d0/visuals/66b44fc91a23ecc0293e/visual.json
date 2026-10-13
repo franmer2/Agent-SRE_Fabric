@@ -1,0 +1,141 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "66b44fc91a23ecc0293e",
+  "position": {
+    "x": 32,
+    "y": 776,
+    "z": 8000,
+    "width": 1856,
+    "height": 272,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item"
+                    }
+                  },
+                  "Property": "Item Name"
+                }
+              },
+              "queryRef": "Item.Item Name",
+              "nativeQueryRef": "Item Name"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Count"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Count",
+              "nativeQueryRef": "Refresh Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Failure Count"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Failure Count",
+              "nativeQueryRef": "Refresh Failure Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Average Refresh Minutes"
+                }
+              },
+              "queryRef": "Refresh Daily.Average Refresh Minutes",
+              "nativeQueryRef": "Average Refresh Minutes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "P95 Refresh Minutes"
+                }
+              },
+              "queryRef": "Refresh Daily.P95 Refresh Minutes",
+              "nativeQueryRef": "P95 Refresh Minutes"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'File d''exceptions'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

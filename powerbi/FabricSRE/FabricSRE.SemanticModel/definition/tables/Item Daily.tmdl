@@ -1,0 +1,130 @@
+table 'Item Daily'
+
+	/// Total item-level capacity unit seconds.
+	measure 'Item CU Seconds' = SUM('Item Daily'[CuSeconds])
+		formatString: #,##0.00
+
+	/// Item CU constrained to the selected 7, 14, 30, or 60-day window.
+	measure 'Item CU Selected Period' = ```
+			VAR _days = SELECTEDVALUE(Period[Days], 30)
+			VAR _lastVisibleDate =
+				MIN(
+					MAX(Date[Date]),
+					CALCULATE(MAX('Item Daily'[EventDate]), REMOVEFILTERS(Date))
+				)
+			RETURN
+				CALCULATE(
+					[Item CU Seconds],
+					DATESINPERIOD(Date[Date], _lastVisibleDate, -_days, DAY)
+				)
+			```
+		formatString: #,##0.00
+
+	/// Item share of CU in the active filter context.
+	measure 'Item CU Share' = ```
+			DIVIDE(
+				[Item CU Selected Period],
+				CALCULATE([Item CU Selected Period], REMOVEFILTERS(Item))
+			)
+			```
+		formatString: 0.0%
+
+	/// Rank of each item by CU.
+	measure 'Item CU Rank' = RANKX(ALLSELECTED(Item[Item Name]), [Item CU Selected Period],, DESC, Dense)
+		formatString: #,##0
+
+	/// Total execution duration.
+	measure 'Duration Seconds' = SUM('Item Daily'[DurationSeconds])
+		formatString: #,##0
+
+	/// Total item failures.
+	measure 'Item Failure Count' = SUM('Item Daily'[FailureCount])
+		formatString: #,##0
+
+	/// Total users contributing operations.
+	measure 'User Count' = SUM('Item Daily'[UserCount])
+		formatString: #,##0
+
+	/// Item CU trend versus the prior equal-length period.
+	measure 'Item CU Trend Percent' = ```
+			VAR _days = COUNTROWS(VALUES(Date[Date]))
+			VAR _current = [Item CU Seconds]
+			VAR _previous =
+				CALCULATE(
+					[Item CU Seconds],
+					DATEADD(Date[Date], -_days, DAY)
+				)
+			RETURN
+				DIVIDE(_current - _previous, _previous)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+
+	column EventDate
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: EventDate
+
+	column CapacityId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: CapacityId
+
+	column WorkspaceId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: WorkspaceId
+
+	column ItemId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: ItemId
+
+	column OperationId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: OperationId
+
+	column CuSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: CuSeconds
+
+	column DurationSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: DurationSeconds
+
+	column FailureCount
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: FailureCount
+
+	column ThrottlingSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: ThrottlingSeconds
+
+	column UserCount
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: UserCount
+
+	partition 'Item Daily' = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Source{[Schema="dbo", Item="gold_item_daily"]}[Data]
+			in
+				Data

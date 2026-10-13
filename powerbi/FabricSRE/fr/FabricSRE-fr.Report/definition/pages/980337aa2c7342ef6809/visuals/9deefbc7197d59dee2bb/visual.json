@@ -1,0 +1,111 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "9deefbc7197d59dee2bb",
+  "position": {
+    "x": 32,
+    "y": 120,
+    "z": 5000,
+    "width": 1856,
+    "height": 144,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Capacity Count"
+                }
+              },
+              "queryRef": "Capacity.Capacity Count",
+              "nativeQueryRef": "Capacity Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "CU Seconds"
+                }
+              },
+              "queryRef": "Capacity Daily.CU Seconds",
+              "nativeQueryRef": "CU Seconds"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "P95 Daily CU"
+                }
+              },
+              "queryRef": "Capacity Daily.P95 Daily CU",
+              "nativeQueryRef": "P95 Daily CU"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "Throttled Days"
+                }
+              },
+              "queryRef": "Capacity Daily.Throttled Days",
+              "nativeQueryRef": "Throttled Days"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Success Rate"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Success Rate",
+              "nativeQueryRef": "Refresh Success Rate"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "outline": [
+        {
+          "selector": {
+            "id": "default"
+          },
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+mcp[cli]>=1.13,<2
+azure-identity>=1.19,<2
+aiohttp>=3.10,<4
+httpx>=0.28,<1
+uvicorn[standard]>=0.34,<1

@@ -1,0 +1,43 @@
+table Workspace
+
+	/// Number of workspaces in the selected context.
+	measure 'Workspace Count' = DISTINCTCOUNT(Workspace[WorkspaceId])
+		formatString: #,##0
+
+	column WorkspaceId
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: WorkspaceId
+
+	column 'Workspace Name'
+		dataType: string
+		sourceColumn: WorkspaceName
+
+	column 'Domain Name'
+		dataType: string
+		sourceColumn: DomainName
+
+	column 'Workspace State'
+		dataType: string
+		sourceColumn: WorkspaceState
+
+	column 'Is Orphaned'
+		dataType: boolean
+		sourceColumn: IsOrphaned
+
+	column 'Last Activity Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: LastActivityDate
+
+	partition Workspace = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Value.NativeQuery(Source, "SELECT WorkspaceId, WorkspaceName, DomainName, WorkspaceState, IsOrphaned, LastActivityDate FROM dbo.gold_workspace_current", null, [EnableFolding=true])
+			in
+				Data

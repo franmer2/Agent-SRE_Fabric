@@ -1,0 +1,54 @@
+EVALUATE
+SELECTCOLUMNS(
+    'Metrics By Item Operation And Day',
+    "EventDate", 'Metrics By Item Operation And Day'[Date],
+    "CapacityId", 'Metrics By Item Operation And Day'[Capacity Id],
+    "WorkspaceId", 'Metrics By Item Operation And Day'[Workspace Id],
+    "ItemId", 'Metrics By Item Operation And Day'[Item Id],
+    "ItemName",
+        VAR CapacityId = 'Metrics By Item Operation And Day'[Capacity Id]
+        VAR WorkspaceId = 'Metrics By Item Operation And Day'[Workspace Id]
+        VAR ItemId = 'Metrics By Item Operation And Day'[Item Id]
+        RETURN
+            MAXX(
+                FILTER(
+                    'Items',
+                    'Items'[Capacity Id] = CapacityId
+                        && 'Items'[Workspace Id] = WorkspaceId
+                        && 'Items'[Item Id] = ItemId
+                ),
+                'Items'[Item name]
+            ),
+    "ItemType",
+        VAR CapacityId = 'Metrics By Item Operation And Day'[Capacity Id]
+        VAR WorkspaceId = 'Metrics By Item Operation And Day'[Workspace Id]
+        VAR ItemId = 'Metrics By Item Operation And Day'[Item Id]
+        RETURN
+            MAXX(
+                FILTER(
+                    'Items',
+                    'Items'[Capacity Id] = CapacityId
+                        && 'Items'[Workspace Id] = WorkspaceId
+                        && 'Items'[Item Id] = ItemId
+                ),
+                'Items'[Item kind]
+            ),
+    "OperationName", 'Metrics By Item Operation And Day'[Operation name],
+    "OperationType",
+        VAR OperationName = LOWER('Metrics By Item Operation And Day'[Operation name])
+        RETURN
+            IF(
+                CONTAINSSTRING(OperationName, "query")
+                    || CONTAINSSTRING(OperationName, "visual")
+                    || CONTAINSSTRING(OperationName, "interactive"),
+                "Interactive",
+                "Background"
+            ),
+    "UserIdHash", BLANK(),
+    "CuSeconds", 'Metrics By Item Operation And Day'[CU (s)],
+    "DurationSeconds", 'Metrics By Item Operation And Day'[Duration (s)],
+    "IsFailure", 'Metrics By Item Operation And Day'[Failed operations] > 0,
+    "ThrottlingSeconds", 'Metrics By Item Operation And Day'[Throttling (min)] * 60,
+    "CollectedAtUtc", UTCNOW()
+)
+

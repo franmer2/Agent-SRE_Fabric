@@ -1,0 +1,198 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "6d82fbf3334d09d91650",
+  "position": {
+    "x": 32,
+    "y": 776,
+    "z": 10000,
+    "width": 1856,
+    "height": 272,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item"
+                    }
+                  },
+                  "Property": "Item Name"
+                }
+              },
+              "queryRef": "Item.Item Name",
+              "nativeQueryRef": "Item Name"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Selected Period"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Selected Period",
+              "nativeQueryRef": "Item CU Selected Period"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Share"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Share",
+              "nativeQueryRef": "Item CU Share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Trend Percent"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Trend Percent",
+              "nativeQueryRef": "Item CU Trend Percent"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item Failure Count"
+                }
+              },
+              "queryRef": "Item Daily.Item Failure Count",
+              "nativeQueryRef": "Item Failure Count"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Classement détaillé'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filter4e551bcdb7724741c8b20000",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Item Daily"
+              }
+            },
+            "Property": "Item CU Rank"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Item Daily",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Between": {
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "Item CU Rank"
+                    }
+                  },
+                  "LowerBound": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  },
+                  "UpperBound": {
+                    "Literal": {
+                      "Value": "15L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}

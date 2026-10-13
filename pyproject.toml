@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fabric-sre-accelerator"
+version = "1.0.0"
+description = "Reusable Microsoft Fabric administration and SRE accelerator"
+requires-python = ">=3.11"
+dependencies = [
+  "azure-identity>=1.19,<2",
+  "jsonschema>=4.23,<5",
+  "PyYAML>=6.0,<7",
+  "requests>=2.32,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "ruff>=0.9,<1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+

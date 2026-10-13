@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: fabric-sre-accelerator
+Version: 1.0.0
+Summary: Reusable Microsoft Fabric administration and SRE accelerator
+Requires-Python: >=3.11
+Requires-Dist: azure-identity<2,>=1.19
+Requires-Dist: jsonschema<5,>=4.23
+Requires-Dist: PyYAML<7,>=6.0
+Requires-Dist: requests<3,>=2.32
+Provides-Extra: dev
+Requires-Dist: pytest<9,>=8.3; extra == "dev"
+Requires-Dist: ruff<1,>=0.9; extra == "dev"

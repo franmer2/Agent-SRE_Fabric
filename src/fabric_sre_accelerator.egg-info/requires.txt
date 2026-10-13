@@ -1,0 +1,8 @@
+azure-identity<2,>=1.19
+jsonschema<5,>=4.23
+PyYAML<7,>=6.0
+requests<3,>=2.32
+
+[dev]
+pytest<9,>=8.3
+ruff<1,>=0.9

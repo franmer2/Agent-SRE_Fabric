@@ -1,0 +1,54 @@
+schemaVersion: "1.0"
+router:
+  default: inventory
+subagents:
+  - id: inventory
+    names: { fr: "Inventaire", en: "Inventory" }
+    readOnly: true
+    responsibilities:
+      - capacities, workspaces, items, owners, assignments
+      - freshness and collection completeness
+    tools:
+      - lakehouse.sql.read
+      - fabric.core.mcp.read
+      - powerbi.admin.read
+      - arm.capacities.read
+  - id: capacity-cost
+    names: { fr: "Capacité et coûts", en: "Capacity and cost" }
+    readOnly: true
+    responsibilities:
+      - utilization, P95, peaks, throttling and anomaly detection
+      - cost estimation and right-sizing recommendations
+    tools:
+      - lakehouse.sql.read
+      - capacity.metrics.read
+      - arm.pricing.read
+  - id: governance
+    names: { fr: "Gouvernance", en: "Governance" }
+    readOnly: true
+    responsibilities:
+      - domains, endorsements, scanner lineage and tenant-setting drift
+      - orphaned and inactive content
+    tools:
+      - lakehouse.sql.read
+      - fabric.admin.read
+      - powerbi.scanner.read
+  - id: incidents
+    names: { fr: "Incidents", en: "Incidents" }
+    readOnly: true
+    responsibilities:
+      - correlate capacity, refresh, activity and throttling signals
+      - produce incident timelines, evidence and proposed mitigations
+    tools:
+      - lakehouse.sql.read
+      - fabric.core.mcp.read
+      - approval.request
+actions:
+  policy: human-approval-required
+  allowed:
+    - capacity.resume
+    - capacity.suspend
+    - capacity.resize
+    - workspace.reassign
+  auditTable: agent_action_audit
+

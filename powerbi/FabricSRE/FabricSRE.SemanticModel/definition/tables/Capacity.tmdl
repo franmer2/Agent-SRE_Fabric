@@ -1,0 +1,52 @@
+table Capacity
+
+	/// Number of capacities in the selected scope.
+	measure 'Capacity Count' = DISTINCTCOUNT(Capacity[CapacityId])
+		formatString: #,##0
+
+	column CapacityId
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: CapacityId
+
+	column 'Capacity Name'
+		dataType: string
+		sourceColumn: CapacityName
+
+	column 'Capacity Type'
+		dataType: string
+		sourceColumn: CapacityType
+
+	column SKU
+		dataType: string
+		sourceColumn: Sku
+
+	column Region
+		dataType: string
+		sourceColumn: Region
+
+	column State
+		dataType: string
+		sourceColumn: State
+
+	column 'Workspace Count'
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: WorkspaceCount
+
+	column 'Estimated Daily Cost'
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: EstimatedCost
+
+	partition Capacity = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Value.NativeQuery(Source, "SELECT CapacityId, CapacityName, CapacityType, Sku, Region, State, WorkspaceCount, EstimatedCost FROM dbo.silver_capacity_snapshot WHERE SnapshotDate = (SELECT MAX(SnapshotDate) FROM dbo.silver_capacity_snapshot)", null, [EnableFolding=true])
+			in
+				Data

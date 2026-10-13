@@ -1,0 +1,26 @@
+table Operation
+
+	column OperationId
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: OperationId
+
+	column 'Operation Name'
+		dataType: string
+		sourceColumn: OperationName
+
+	column 'Operation Type'
+		dataType: string
+		sourceColumn: OperationType
+
+	partition Operation = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Value.NativeQuery(Source, "SELECT DISTINCT CONCAT(OperationType, '|', OperationName) AS OperationId, OperationName, OperationType FROM dbo.silver_item_cu", null, [EnableFolding=true])
+			in
+				Data
+

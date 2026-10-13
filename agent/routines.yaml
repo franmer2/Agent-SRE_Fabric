@@ -1,0 +1,19 @@
+schemaVersion: "1.0"
+routines:
+  - id: daily-admin-digest
+    schedule: "0 8 * * *"
+    timezoneFrom: client.timeZone
+    languageFrom: client.defaultLanguage
+    task: "Summarize the last completed collection, capacity risk, failed refreshes, stale/orphaned content, governance drift, and prioritized actions."
+    deliveryFrom: alerts
+  - id: capacity-sustained-high
+    schedule: "*/15 * * * *"
+    task: "Alert when rolling capacity utilization exceeds thresholds.capacityHighPercent for thresholds.capacityHighMinutes. Do not change capacity state or SKU."
+  - id: collection-freshness
+    schedule: "15 */2 * * *"
+    task: "Alert when data freshness exceeds slo.dataFreshnessHours or a required collector failed."
+  - id: weekly-optimization
+    schedule: "0 8 * * 1"
+    timezoneFrom: client.timeZone
+    task: "Rank underused capacities, top CU consumers, storage growth, and optimization candidates. Recommendations only."
+

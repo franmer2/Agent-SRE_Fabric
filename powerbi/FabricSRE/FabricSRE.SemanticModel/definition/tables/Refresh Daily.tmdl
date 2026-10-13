@@ -1,0 +1,74 @@
+table 'Refresh Daily'
+
+	/// Number of refresh attempts.
+	measure 'Refresh Count' = SUM('Refresh Daily'[RefreshCount])
+		formatString: #,##0
+
+	/// Number of failed refreshes.
+	measure 'Refresh Failure Count' = SUM('Refresh Daily'[RefreshFailureCount])
+		formatString: #,##0
+
+	/// Refresh success rate.
+	measure 'Refresh Success Rate' = DIVIDE([Refresh Count] - [Refresh Failure Count], [Refresh Count])
+		formatString: 0.0%
+
+	/// Average refresh duration in minutes.
+	measure 'Average Refresh Minutes' = DIVIDE(AVERAGE('Refresh Daily'[AverageDurationSeconds]), 60)
+		formatString: #,##0.0
+
+	/// P95 refresh duration in minutes.
+	measure 'P95 Refresh Minutes' = DIVIDE(MAX('Refresh Daily'[P95DurationSeconds]), 60)
+		formatString: #,##0.0
+
+	column EventDate
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: EventDate
+
+	column WorkspaceId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: WorkspaceId
+
+	column ItemId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: ItemId
+
+	column RefreshCount
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: RefreshCount
+
+	column RefreshFailureCount
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: RefreshFailureCount
+
+	column AverageDurationSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: AverageDurationSeconds
+
+	column P95DurationSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: P95DurationSeconds
+
+	partition 'Refresh Daily' = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Source{[Schema="dbo", Item="gold_refresh_daily"]}[Data]
+			in
+				Data
+

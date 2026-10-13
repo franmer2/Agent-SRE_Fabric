@@ -1,0 +1,15 @@
+EVALUATE
+SELECTCOLUMNS(
+    'Storage By Workspaces And Day',
+    "SnapshotDate", 'Storage By Workspaces And Day'[Date],
+    "WorkspaceId", 'Storage By Workspaces And Day'[Workspace Id],
+    "ItemId", "__workspace_storage__" & 'Storage By Workspaces And Day'[Workspace Id],
+    "StorageBytes",
+        INT(
+            COALESCE(
+                'Storage By Workspaces And Day'[Utilization (GB)],
+                'Storage By Workspaces And Day'[Static storage in GB]
+            ) * 1073741824
+        ),
+    "CollectedAtUtc", UTCNOW()
+)

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "959935bcdc9f634950c8",
+  "position": {
+    "x": 32,
+    "y": 824,
+    "z": 8000,
+    "width": 1856,
+    "height": 224,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Capacity Name"
+                }
+              },
+              "queryRef": "Capacity.Capacity Name",
+              "nativeQueryRef": "Capacity Name"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "P95 Daily CU"
+                }
+              },
+              "queryRef": "Capacity Daily.P95 Daily CU",
+              "nativeQueryRef": "P95 Daily CU"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "Throttling Seconds"
+                }
+              },
+              "queryRef": "Capacity Daily.Throttling Seconds",
+              "nativeQueryRef": "Throttling Seconds"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity Daily"
+                    }
+                  },
+                  "Property": "Failure Count"
+                }
+              },
+              "queryRef": "Capacity Daily.Failure Count",
+              "nativeQueryRef": "Failure Count"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Risques par capacité'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+.azure/
+.foundry/results/
+dist/
+build/
+*.pyc
+*.log
+report-screenshots/
+config/client.parameters.yaml
+

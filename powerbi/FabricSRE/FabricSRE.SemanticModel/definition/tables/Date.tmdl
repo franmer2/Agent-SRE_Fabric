@@ -1,0 +1,52 @@
+table Date
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Year
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Month
+		dataType: string
+		sortByColumn: MonthNumber
+		sourceColumn: Month
+
+	column MonthNumber
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: MonthNumber
+
+	column YearMonth
+		dataType: string
+		sortByColumn: YearMonthNumber
+		sourceColumn: YearMonth
+
+	column YearMonthNumber
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: YearMonthNumber
+
+	partition Date = m
+		mode: import
+		source =
+			let
+				StartDate = #date(2020, 1, 1),
+				EndDate = Date.AddYears(Date.From(DateTime.LocalNow()), 2),
+				Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				Table = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				Year = Table.AddColumn(Table, "Year", each Date.Year([Date]), Int64.Type),
+				Month = Table.AddColumn(Year, "Month", each Date.ToText([Date], "MMM", "en-CA"), type text),
+				MonthNumber = Table.AddColumn(Month, "MonthNumber", each Date.Month([Date]), Int64.Type),
+				YearMonth = Table.AddColumn(MonthNumber, "YearMonth", each Date.ToText([Date], "yyyy-MM"), type text),
+				YearMonthNumber = Table.AddColumn(YearMonth, "YearMonthNumber", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type)
+			in
+				YearMonthNumber
+

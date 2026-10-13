@@ -1,0 +1,111 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "dee6bab82fbd24b14adb",
+  "position": {
+    "x": 32,
+    "y": 120,
+    "z": 5000,
+    "width": 1856,
+    "height": 144,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Count"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Count",
+              "nativeQueryRef": "Refresh Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Failure Count"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Failure Count",
+              "nativeQueryRef": "Refresh Failure Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "Refresh Success Rate"
+                }
+              },
+              "queryRef": "Refresh Daily.Refresh Success Rate",
+              "nativeQueryRef": "Refresh Success Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Refresh Daily"
+                    }
+                  },
+                  "Property": "P95 Refresh Minutes"
+                }
+              },
+              "queryRef": "Refresh Daily.P95 Refresh Minutes",
+              "nativeQueryRef": "P95 Refresh Minutes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item"
+                    }
+                  },
+                  "Property": "Uncertified Item Count"
+                }
+              },
+              "queryRef": "Item.Uncertified Item Count",
+              "nativeQueryRef": "Uncertified Item Count"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "outline": [
+        {
+          "selector": {
+            "id": "default"
+          },
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

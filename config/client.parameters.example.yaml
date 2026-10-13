@@ -1,0 +1,77 @@
+schemaVersion: "1.0"
+client:
+  code: "contoso"
+  displayName: "Contoso"
+  defaultLanguage: "fr-CA"
+  timeZone: "America/Toronto"
+azure:
+  tenantId: "${AZURE_TENANT_ID}"
+  subscriptionIds:
+    - "${AZURE_SUBSCRIPTION_ID}"
+  capacityResourceGroups: []
+foundry:
+  subscriptionId: "${AZURE_FOUNDRY_SUBSCRIPTION_ID}"
+  resourceGroup: "${FOUNDRY_RESOURCE_GROUP}"
+  agentName: "${FOUNDRY_AGENT_NAME}"
+  fabricAdminMcp:
+    appName: "${FABRIC_ADMIN_MCP_APP_NAME}"
+    environmentName: "${FABRIC_ADMIN_MCP_ENVIRONMENT_NAME}"
+    managedIdentityName: "${FABRIC_ADMIN_MANAGED_IDENTITY_NAME}"
+    registryName: "${FABRIC_ADMIN_MCP_REGISTRY_NAME}"
+    servicePrincipalDisplayName: "${FABRIC_ADMIN_SERVICE_PRINCIPAL_NAME}"
+    adminApiSecurityGroupName: "${FABRIC_ADMIN_API_SECURITY_GROUP_NAME}"
+    location: "${AZURE_LOCATION}"
+fabric:
+  adminWorkspaceName: "Fabric Administration"
+  lakehouseName: "FabricSRE"
+  semanticModelName: "Fabric SRE"
+  reportNameFr: "Administration Fabric - FR"
+  reportNameEn: "Fabric Administration - EN"
+  capacityScope:
+    includeIds: []
+    excludeIds: []
+  capacityMetrics:
+    workspaceName: "Microsoft Fabric Capacity Metrics"
+    semanticModelName: "Fabric Capacity Metrics"
+    semanticModelId: ""
+  historyDays: 400
+  activityLookbackDays: 28
+thresholds:
+  capacityHighPercent: 80
+  capacityHighMinutes: 180
+  capacityCriticalPercent: 95
+  refreshSlowMinutes: 30
+  inactiveItemDays: 60
+  inactiveWorkspaceDays: 90
+  orphanOwnerDays: 7
+  storageGrowthPercent30d: 20
+  anomalyZScore: 3.0
+slo:
+  collectionSuccessPercent: 99
+  dataFreshnessHours: 30
+  refreshSuccessPercent: 98
+cost:
+  currency: "CAD"
+  pricePerCuHour:
+    default: 0.0
+    F2: 0.0
+    F4: 0.0
+alerts:
+  teamsWebhookSecretName: ""
+  emailRecipients: []
+  dailyDigestLocalTime: "08:00"
+features:
+  collectCapacityMetrics: true
+  collectActivityEvents: true
+  collectTenantSettings: true
+  collectGateways: true
+  collectOneLakeStorage: false
+  enableCopilotMetrics: false
+approvals:
+  provider: "teams"
+  timeoutMinutes: 60
+  allowedActions:
+    - "capacity.resume"
+    - "capacity.suspend"
+    - "capacity.resize"
+    - "workspace.reassign"

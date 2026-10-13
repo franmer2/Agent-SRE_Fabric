@@ -1,0 +1,141 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "4b9ccdb74ef2c1ae6d62",
+  "position": {
+    "x": 32,
+    "y": 776,
+    "z": 9000,
+    "width": 1856,
+    "height": 272,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item"
+                    }
+                  },
+                  "Property": "Item Name"
+                }
+              },
+              "queryRef": "Item.Item Name",
+              "nativeQueryRef": "Item Name"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Seconds"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Seconds",
+              "nativeQueryRef": "Item CU Seconds"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Duration Seconds"
+                }
+              },
+              "queryRef": "Item Daily.Duration Seconds",
+              "nativeQueryRef": "Duration Seconds"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item Failure Count"
+                }
+              },
+              "queryRef": "Item Daily.Item Failure Count",
+              "nativeQueryRef": "Item Failure Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "User Count"
+                }
+              },
+              "queryRef": "Item Daily.User Count",
+              "nativeQueryRef": "User Count"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Metadata and contribution'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

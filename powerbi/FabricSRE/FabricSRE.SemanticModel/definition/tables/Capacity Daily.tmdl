@@ -1,0 +1,84 @@
+table 'Capacity Daily'
+
+	/// Total capacity unit seconds in the selected period.
+	measure 'CU Seconds' = SUM('Capacity Daily'[CuSeconds])
+		formatString: #,##0.00
+
+	/// Average daily capacity unit seconds.
+	measure 'Average Daily CU' = AVERAGEX(VALUES(Date[Date]), [CU Seconds])
+		formatString: #,##0.00
+
+	/// Maximum daily capacity unit seconds.
+	measure 'Maximum Daily CU' = MAXX(VALUES(Date[Date]), [CU Seconds])
+		formatString: #,##0.00
+
+	/// P95 of daily capacity unit seconds.
+	measure 'P95 Daily CU' = PERCENTILEX.INC(VALUES(Date[Date]), [CU Seconds], 0.95)
+		formatString: #,##0.00
+
+	/// Total throttling seconds.
+	measure 'Throttling Seconds' = SUM('Capacity Daily'[ThrottlingSeconds])
+		formatString: #,##0
+
+	/// Number of days with throttling.
+	measure 'Throttled Days' = COUNTROWS(FILTER(VALUES(Date[Date]), [Throttling Seconds] > 0))
+		formatString: #,##0
+
+	/// Total failed operations.
+	measure 'Failure Count' = SUM('Capacity Daily'[FailureCount])
+		formatString: #,##0
+
+	/// CU change compared with the preceding period of equal length.
+	measure 'CU Trend Percent' = ```
+			VAR _days = COUNTROWS(VALUES(Date[Date]))
+			VAR _current = [CU Seconds]
+			VAR _previous =
+				CALCULATE(
+					[CU Seconds],
+					DATEADD(Date[Date], -_days, DAY)
+				)
+			RETURN
+				DIVIDE(_current - _previous, _previous)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+
+	column EventDate
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: EventDate
+
+	column CapacityId
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: CapacityId
+
+	column CuSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: CuSeconds
+
+	column ThrottlingSeconds
+		dataType: decimal
+		isHidden
+		summarizeBy: none
+		sourceColumn: ThrottlingSeconds
+
+	column FailureCount
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: FailureCount
+
+	partition 'Capacity Daily' = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Source{[Schema="dbo", Item="gold_capacity_daily"]}[Data]
+			in
+				Data
+

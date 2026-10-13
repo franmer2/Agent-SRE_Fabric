@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/fabric-sre/client.parameters.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "client", "azure", "foundry", "fabric", "thresholds", "slo", "cost", "alerts", "features", "approvals"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "client": {
+      "type": "object",
+      "required": ["code", "displayName", "defaultLanguage", "timeZone"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "displayName": { "type": "string", "minLength": 1 },
+        "defaultLanguage": { "enum": ["fr-CA", "en-CA"] },
+        "timeZone": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "azure": {
+      "type": "object",
+      "required": ["tenantId", "subscriptionIds", "capacityResourceGroups"],
+      "properties": {
+        "tenantId": { "type": "string", "minLength": 1 },
+        "subscriptionIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+        "capacityResourceGroups": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "foundry": {
+      "type": "object",
+      "required": ["subscriptionId", "resourceGroup", "agentName", "fabricAdminMcp"],
+      "properties": {
+        "subscriptionId": { "type": "string", "minLength": 1 },
+        "resourceGroup": { "type": "string", "minLength": 1 },
+        "agentName": { "type": "string", "minLength": 1 },
+        "fabricAdminMcp": {
+          "type": "object",
+          "required": ["appName", "environmentName", "managedIdentityName", "registryName", "servicePrincipalDisplayName", "adminApiSecurityGroupName", "location"],
+          "properties": {
+            "appName": { "type": "string", "minLength": 1 },
+            "environmentName": { "type": "string", "minLength": 1 },
+            "managedIdentityName": { "type": "string", "minLength": 1 },
+            "registryName": { "type": "string", "minLength": 1 },
+            "servicePrincipalDisplayName": { "type": "string", "minLength": 1 },
+            "adminApiSecurityGroupName": { "type": "string", "minLength": 1 },
+            "location": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "fabric": {
+      "type": "object",
+      "required": ["adminWorkspaceName", "lakehouseName", "semanticModelName", "capacityScope", "historyDays", "activityLookbackDays"],
+      "properties": {
+        "adminWorkspaceName": { "type": "string", "minLength": 1 },
+        "lakehouseName": { "type": "string", "minLength": 1 },
+        "semanticModelName": { "type": "string", "minLength": 1 },
+        "reportNameFr": { "type": "string" },
+        "reportNameEn": { "type": "string" },
+        "capacityScope": {
+          "type": "object",
+          "required": ["includeIds", "excludeIds"],
+          "properties": {
+            "includeIds": { "type": "array", "items": { "type": "string" } },
+            "excludeIds": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        },
+        "capacityMetrics": {
+          "type": "object",
+          "properties": {
+            "workspaceName": { "type": "string" },
+            "semanticModelName": { "type": "string" },
+            "semanticModelId": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "historyDays": { "type": "integer", "minimum": 60 },
+        "activityLookbackDays": { "type": "integer", "minimum": 1, "maximum": 28 }
+      },
+      "additionalProperties": true
+    },
+    "thresholds": { "type": "object", "additionalProperties": { "type": "number" } },
+    "slo": { "type": "object", "additionalProperties": { "type": "number" } },
+    "cost": {
+      "type": "object",
+      "required": ["currency", "pricePerCuHour"],
+      "properties": {
+        "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+        "pricePerCuHour": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } }
+      },
+      "additionalProperties": false
+    },
+    "alerts": { "type": "object" },
+    "features": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "approvals": {
+      "type": "object",
+      "required": ["provider", "timeoutMinutes", "allowedActions"],
+      "properties": {
+        "provider": { "enum": ["teams", "email", "manual"] },
+        "timeoutMinutes": { "type": "integer", "minimum": 5 },
+        "allowedActions": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

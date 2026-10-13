@@ -1,0 +1,20 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	discourageImplicitMeasures
+
+expression Server = "kklirwrpwo2unldonbdlkmxz3q-otgqhcfq7khudf6qxof2yawysq.datawarehouse.fabric.microsoft.com" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+expression Database = "FabricSRE" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+ref table Date
+ref table Capacity
+ref table Workspace
+ref table Item
+ref table Operation
+ref table Period
+ref table 'Capacity Daily'
+ref table 'Item Daily'
+ref table 'Refresh Daily'
+ref table 'Storage Daily'

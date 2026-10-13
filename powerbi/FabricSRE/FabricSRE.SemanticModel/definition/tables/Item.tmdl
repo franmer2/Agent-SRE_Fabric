@@ -1,0 +1,48 @@
+table Item
+
+	/// Number of Fabric items in the selected context.
+	measure 'Item Count' = DISTINCTCOUNT(Item[ItemId])
+		formatString: #,##0
+
+	/// Number of items that are not certified.
+	measure 'Uncertified Item Count' = CALCULATE([Item Count], Item[Certification] <> "Certified")
+		formatString: #,##0
+
+	column ItemId
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: ItemId
+
+	column 'Item Name'
+		dataType: string
+		sourceColumn: ItemName
+
+	column 'Item Type'
+		dataType: string
+		sourceColumn: ItemType
+
+	column Owner
+		dataType: string
+		sourceColumn: Owner
+
+	column Certification
+		dataType: string
+		sourceColumn: Certification
+
+	column 'Last Refresh Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:mm
+		summarizeBy: none
+		sourceColumn: LastRefreshDate
+
+	partition Item = m
+		mode: import
+		source =
+			let
+				Source = Sql.Database(Server, Database),
+				Data = Value.NativeQuery(Source, "SELECT ItemId, ItemName, ItemType, Owner, Certification, LastRefreshDate FROM dbo.gold_item_current", null, [EnableFolding=true])
+			in
+				Data
+

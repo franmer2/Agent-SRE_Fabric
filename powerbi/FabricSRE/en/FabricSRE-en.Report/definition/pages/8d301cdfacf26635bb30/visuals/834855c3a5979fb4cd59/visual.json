@@ -1,0 +1,97 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "834855c3a5979fb4cd59",
+  "position": {
+    "x": 32,
+    "y": 120,
+    "z": 7000,
+    "width": 1856,
+    "height": 128,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Selected Period"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Selected Period",
+              "nativeQueryRef": "Item CU Selected Period"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item CU Trend Percent"
+                }
+              },
+              "queryRef": "Item Daily.Item CU Trend Percent",
+              "nativeQueryRef": "Item CU Trend Percent"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Item Failure Count"
+                }
+              },
+              "queryRef": "Item Daily.Item Failure Count",
+              "nativeQueryRef": "Item Failure Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Item Daily"
+                    }
+                  },
+                  "Property": "Duration Seconds"
+                }
+              },
+              "queryRef": "Item Daily.Duration Seconds",
+              "nativeQueryRef": "Duration Seconds"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "outline": [
+        {
+          "selector": {
+            "id": "default"
+          },
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
