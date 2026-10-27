@@ -7,7 +7,7 @@ Ce document est la spécification fonctionnelle de référence du Live Report
 
 ## 1. Référence de publication
 
-La référence validée le 13 octobre 2026 correspond à la version de service 39.
+La référence validée le 27 octobre 2026 correspond à la version de service 40.
 Ce numéro est propre à l'actif Azure SRE utilisé pendant la validation : un
 import dans un autre environnement peut produire un autre numéro. La conformité
 doit donc être vérifiée avec la checklist de ce document, et non avec le seul
@@ -34,6 +34,11 @@ Le Live Report appelle quatre outils en lecture seule :
 - `FabricAdmin_list_items`;
 - `FabricAdmin_get_cu_metrics`, lorsque Capacity Metrics est configuré.
 
+Le parseur de réponses doit accepter les réponses structurées ainsi que les
+réponses textuelles avec ou sans séparateur avant les métadonnées `RequestId`
+et `Date`. Il doit rechercher un bloc de données valide plutôt que supposer que
+le premier bloc contient toujours l'inventaire.
+
 L'interface doit rester générique : aucun nom de client, identifiant de tenant,
 abonnement, workspace, capacité ou artefact ne doit être codé en dur.
 
@@ -55,6 +60,12 @@ libellés. La version anglaise conserve **workspace** et **item**.
   vertical au-delà de 560 px;
 - aucun chevauchement de barres ni débordement horizontal;
 - colonnes des tableaux redimensionnables.
+- lecture tolérante des anciens et nouveaux formats de réponse du connecteur
+  `FabricSRE`, y compris lorsque `RequestId` et `Date` ne sont plus précédés du
+  séparateur historique;
+- lorsqu'une réponse de capacités reste illisible, les compteurs affichent
+  **–** plutôt qu'un faux zéro et une alerte localisée signale le format
+  inattendu.
 
 ### Indicateurs CU
 
@@ -106,6 +117,10 @@ backdrop ou `Échap`, mettre `aria-expanded` à jour et rendre le focus au bouto
 - [ ] les quatre outils attendus sont proposés au rapport;
 - [ ] aucun outil n'est dupliqué;
 - [ ] l'inventaire des capacités, espaces de travail et artefacts se charge;
+- [ ] les formats de réponse avec et sans séparateur avant `RequestId` et
+      `Date` produisent le même inventaire de capacités;
+- [ ] une réponse de capacités illisible affiche **–** et une alerte de format
+      inattendu, jamais trois faux compteurs à zéro;
 - [ ] une valeur CU absente affiche **Non disponible**, jamais un faux zéro;
 - [ ] la période réellement couverte est affichée.
 

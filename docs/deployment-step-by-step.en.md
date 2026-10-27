@@ -843,7 +843,7 @@ In the Azure SRE interface:
 
 1. Open **Live Reports** or **Reports**.
 2. Select the latest approved bilingual asset. The validated reference is
-   service version 39, but its number can change after import.
+   service version 40, but its number can change after import.
 3. Link the report to the `meta_agent` agent.
 4. Verify that `FabricSRE` for capacities and all three `FabricAdmin` tools are
    offered as sources.

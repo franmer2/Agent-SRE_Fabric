@@ -7,7 +7,7 @@ complements the [deployment guide](deployment.en.md) and the
 
 ## 1. Publication reference
 
-The reference validated on October 13, 2026 corresponds to service version 39.
+The reference validated on October 27, 2026 corresponds to service version 40.
 That number belongs to the Azure SRE asset used during validation; importing
 the asset into another environment can produce a different number. Compliance
 must therefore be established with this document's checklist, not only with a
@@ -34,6 +34,11 @@ The Live Report calls four read-only tools:
 - `FabricAdmin_list_items`;
 - `FabricAdmin_get_cu_metrics` when Capacity Metrics is configured.
 
+The response parser must accept structured responses and text responses with
+or without a separator before the `RequestId` and `Date` metadata. It must
+search for a valid data block instead of assuming that the first block always
+contains the inventory.
+
 The interface must remain generic: no customer, tenant, subscription,
 workspace, capacity, or item identifier may be hard-coded.
 
@@ -54,6 +59,11 @@ English UI retains **workspace** and **item**.
   thicker than 28 px, and vertical scrolling beyond 560 px;
 - no overlapping bars or horizontal page overflow;
 - resizable table columns.
+- tolerant parsing of legacy and current `FabricSRE` connector response
+  formats, including responses where `RequestId` and `Date` are no longer
+  preceded by the historical separator;
+- when a capacity response is still unreadable, counters display **–** rather
+  than a false zero and a localized alert reports the unexpected format.
 
 ### CU indicators
 
@@ -103,6 +113,10 @@ The dialog must be keyboard accessible, close through its button, backdrop, or
 - [ ] all four expected tools are offered to the report;
 - [ ] no tool is duplicated;
 - [ ] capacity, workspace, and item inventory loads;
+- [ ] response formats with and without a separator before `RequestId` and
+      `Date` produce the same capacity inventory;
+- [ ] an unreadable capacity response displays **–** and an unexpected-format
+      alert, never three false zero counters;
 - [ ] missing CU data displays **Unavailable**, never a false zero;
 - [ ] the actually covered period is displayed.
 
