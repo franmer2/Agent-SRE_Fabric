@@ -855,7 +855,7 @@ Dans l'interface Azure SRE :
 
 1. Ouvrir la section **Live Reports** ou **Reports**.
 2. Sélectionner l'actif bilingue approuvé le plus récent. La référence validée
-   est la version de service 40, mais le numéro peut changer après import.
+   est la version de service 41, mais le numéro peut changer après import.
 3. Lier le rapport à l'agent `meta_agent`.
 4. Vérifier que `FabricSRE` pour les capacités et les trois outils
    `FabricAdmin` sont proposés comme sources.

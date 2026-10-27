@@ -234,7 +234,7 @@ all three Fabric Admin tools and the FabricSRE capacity-inventory tool.
 
 Use the latest approved asset and run the acceptance procedure in the
 [Live Report specification](live-report.en.md). The development environment's
-validated reference is service version 40, but an import into another
+validated reference is service version 41, but an import into another
 environment can receive another number; capabilities and acceptance checks are
 authoritative.
 

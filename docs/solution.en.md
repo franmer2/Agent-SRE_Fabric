@@ -60,6 +60,11 @@ its behavior during a capacity outage are defined in the
 capacity dedicated to the SRE administration workspace reduces the risk that a
 production capacity disables its own monitoring chain.
 
+The Live Report relies on the binding injected by the Azure SRE viewer each
+time it opens. The published asset must not retain a frozen copy of that
+binding: it uses `{REPORT_NONCE}` and accepts block arrays returned without a
+`content` envelope.
+
 ![Overview of the Fabric capacity monitoring Live Report](assets/live-report-overview.png)
 
 *French view of the bilingual Live Report, showing global filters, CU

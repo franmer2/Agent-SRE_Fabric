@@ -60,6 +60,11 @@ en cas d'arrêt de capacité sont définis dans la
 capacité Fabric dédiée au workspace d'administration SRE réduit le risque
 qu'une capacité de production interrompe sa propre chaîne de supervision.
 
+Le Live Report repose sur la liaison injectée par la visionneuse Azure SRE à
+chaque ouverture. L'actif publié ne doit pas conserver une copie figée de cette
+liaison : il utilise `{REPORT_NONCE}` et accepte notamment les listes de blocs
+renvoyées sans enveloppe `content`.
+
 ![Vue d'ensemble du Live Report de surveillance des capacités Fabric](assets/live-report-overview.png)
 
 *Vue d'ensemble du Live Report bilingue : filtres globaux, indicateurs CU,

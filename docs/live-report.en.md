@@ -7,7 +7,7 @@ complements the [deployment guide](deployment.en.md) and the
 
 ## 1. Publication reference
 
-The reference validated on October 27, 2026 corresponds to service version 40.
+The reference validated on October 27, 2026 corresponds to service version 41.
 That number belongs to the Azure SRE asset used during validation; importing
 the asset into another environment can produce a different number. Compliance
 must therefore be established with this document's checklist, not only with a
@@ -34,10 +34,15 @@ The Live Report calls four read-only tools:
 - `FabricAdmin_list_items`;
 - `FabricAdmin_get_cu_metrics` when Capacity Metrics is configured.
 
-The response parser must accept structured responses and text responses with
-or without a separator before the `RequestId` and `Date` metadata. It must
-search for a valid data block instead of assuming that the first block always
-contains the inventory.
+The response parser must accept structured responses, block arrays passed
+directly without a `content` envelope, and text responses with or without a
+separator before the `RequestId` and `Date` metadata. It must search for a
+valid data block instead of assuming that the first block always contains the
+inventory.
+
+The published file must not embed a frozen copy of the viewer binding code. It
+retains only the `{REPORT_NONCE}` security identifier so the viewer injects
+its current binding each time the report opens.
 
 The interface must remain generic: no customer, tenant, subscription,
 workspace, capacity, or item identifier may be hard-coded.
@@ -60,8 +65,10 @@ English UI retains **workspace** and **item**.
 - no overlapping bars or horizontal page overflow;
 - resizable table columns.
 - tolerant parsing of legacy and current `FabricSRE` connector response
-  formats, including responses where `RequestId` and `Date` are no longer
-  preceded by the historical separator;
+  formats, including an unenveloped block array and responses where
+  `RequestId` and `Date` are no longer preceded by the historical separator;
+- removal of both frozen legacy viewer bindings and use of the expected
+  `{REPORT_NONCE}` token;
 - when a capacity response is still unreadable, counters display **–** rather
   than a false zero and a localized alert reports the unexpected format.
 
@@ -112,7 +119,10 @@ The dialog must be keyboard accessible, close through its button, backdrop, or
 
 - [ ] all four expected tools are offered to the report;
 - [ ] no tool is duplicated;
+- [ ] the file contains no frozen viewer binding and uses `{REPORT_NONCE}`;
 - [ ] capacity, workspace, and item inventory loads;
+- [ ] a block array passed directly without a `content` envelope produces the
+      same capacity inventory;
 - [ ] response formats with and without a separator before `RequestId` and
       `Date` produce the same capacity inventory;
 - [ ] an unreadable capacity response displays **–** and an unexpected-format

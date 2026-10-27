@@ -243,7 +243,7 @@ capacités.
 
 Utiliser l'actif approuvé le plus récent et exécuter la recette de la
 [spécification du Live Report](live-report.fr.md). La référence validée dans
-l'environnement de développement est la version de service 40, mais un import
+l'environnement de développement est la version de service 41, mais un import
 dans un autre environnement peut recevoir un autre numéro : les fonctions et
 les contrôles de recette font foi.
 
