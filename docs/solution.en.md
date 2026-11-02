@@ -76,6 +76,16 @@ V2 option for near-real-time signals; it has no backfill.
 
 ## 3. Capacity inventory fields, sources, and permissions
 
+The table below describes collected inventory sources. The Live Report
+currently uses `FabricSRE_list_capacities` for capacities: Fabric Core only
+returns those accessible to the connector identity as an administrator or
+contributor, even when Fabric Admin returns additional workspaces. Azure
+Reader alone does not guarantee that visibility. A "capacity not found" alert
+can therefore indicate a permissions boundary rather than a deleted or
+suspended resource. Follow the
+[connector permissions procedure](deployment.en.md#capacity-visibility-and-fabric-core-connector-permissions)
+without automatically granting write privileges.
+
 | Field | Primary source | Permission/control | Status and notes |
 |---|---|---|---|
 | Name, ID, SKU | Power BI Admin `GET /admin/capacities` | Fabric admin or principal enabled for read-only admin APIs | GA; 200 requests/hour |

@@ -34,6 +34,14 @@ The Live Report calls four read-only tools:
 - `FabricAdmin_list_items`;
 - `FabricAdmin_get_cu_metrics` when Capacity Metrics is configured.
 
+These sources do not necessarily share a scope: Fabric Admin can return a
+workspace whose capacity is not visible to the `FabricSRE` connector identity.
+Before changing the report for a "capacity not found" alert, check the raw,
+paginated `FabricSRE_list_capacities` response and the
+[connector permissions](deployment.en.md#capacity-visibility-and-fabric-core-connector-permissions).
+Azure Reader alone does not guarantee this visibility. Do not exclude
+`Inactive` capacities or resume them to discover them.
+
 The response parser must accept structured responses, block arrays passed
 directly without a `content` envelope, and text responses with or without a
 separator before the `RequestId` and `Date` metadata. It must search for a

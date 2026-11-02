@@ -236,6 +236,13 @@ Dans <https://sre.azure.com> :
 Azure SRE Agent accepte au maximum 80 outils sur l'ensemble de ses connecteurs.
 Ne pas sélectionner tous les outils par défaut.
 
+Avant le test, suivre la vérification des
+[permissions et de la visibilité des capacités](deployment.fr.md#visibilité-des-capacités-et-permissions-du-connecteur-fabric-core).
+Relever l'identité du connecteur `FabricSRE` : le rôle Reader Azure ne garantit
+pas son accès Fabric aux capacités. Toute attribution de droits supplémentaires
+doit être approuvée et auditée; ne pas saisir le nom d'une identité managée
+comme une adresse courriel dans le portail Fabric.
+
 ## D3. Tester la connexion
 
 1. Cliquer sur **New chat thread**.
@@ -257,6 +264,11 @@ ou seulement les workspaces accessibles à ton identité.
 
 Si l'appel échoue, revenir à **Builder > Connectors**, vérifier l'état, l'URL,
 l'authentification et la sélection des outils.
+
+Tester aussi `FabricSRE_list_capacities` sans filtre d'état, en lisant toutes les
+pages. Une capacité manquante dans la réponse brute relève de la visibilité de
+l'identité, pas du rapport. Une capacité `Inactive` doit rester visible si
+l'identité y a accès; ne pas la redémarrer pour ce test.
 
 ## D4. Commencer avec des prompts guidés
 

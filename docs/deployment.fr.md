@@ -147,6 +147,58 @@ sécurité dédié aux identités SRE :
 L'identité d'action, si elle est déployée, doit rester distincte et toute action
 doit conserver l'approbation humaine.
 
+### Visibilité des capacités et permissions du connecteur Fabric Core
+
+Un connecteur `FabricSRE` **Connected** ne garantit pas un inventaire complet.
+`FabricSRE_list_capacities` utilise Fabric Core `GET /v1/capacities`, qui
+retourne les capacités accessibles au principal appelant comme administrateur
+ou contributeur. L'identité managée du connecteur n'est pas le compte de la
+personne qui consulte les portails.
+
+| Accès | Périmètre |
+|---|---|
+| Reader Azure sur la capacité, le groupe ou l'abonnement | Lecture ARM; ne garantit pas la visibilité dans Fabric Core |
+| Permissions Fabric sur la capacité | Déterminent la visibilité par `list_capacities`; les droits d'un workspace ne prouvent pas ces permissions |
+| Autorisation des API admin en lecture seule | Inventaire tenant via Fabric Admin; ne remplace pas les permissions Fabric Core |
+
+Pour une capacité absente :
+
+1. Dans Azure SRE Agent, ouvrir **Build + setup / Builder > Connectors >
+   FabricSRE > Edit** et relever la méthode d'authentification, l'identité
+   managée sélectionnée et le tenant. Ne pas modifier le connecteur
+   `FabricAdmin` pour corriger l'inventaire des capacités du Live Report.
+2. Demander à l'agent la réponse brute de `FabricSRE_list_capacities`, sans
+   filtre d'état et avec toutes les pages. Comparer les identifiants, pas
+   seulement les noms, avec l'inventaire attendu.
+3. Vérifier les permissions de cette identité sur chaque capacité attendue.
+   Une réponse complète qui omet la capacité indique un problème de visibilité
+   en amont du rapport; ne pas commencer par modifier son parseur.
+4. Pour une capacité F, consulter dans Azure la ressource **Microsoft Fabric >
+   capacité > Capacity administrators**, distincte de **Access control (IAM)**.
+   Utiliser le sélecteur d'applications/principaux proposé pour identifier
+   l'identité. Dans Fabric, **Admin portal > Capacity settings > capacité >
+   Admin permissions** peut refuser son simple nom avec
+   `You can't use invalid or duplicate emails`. Ne pas inventer d'adresse
+   courriel; si le sélecteur ne résout pas l'identité, faire valider le mode
+   d'attribution pris en charge par l'administrateur.
+5. Faire approuver toute attribution avant de l'appliquer et en conserver un
+   audit : identité, capacité, rôle, justification, approbateur et date.
+   Administrateur et contributeur ne sont pas des rôles de lecture seule.
+   Ne pas les accorder automatiquement pour rendre un compteur complet;
+   préférer une source d'inventaire admin en lecture seule lorsque ces droits
+   ne sont pas acceptables. Conserver uniquement les outils de lecture dans
+   l'agent et l'approbation obligatoire pour toute action.
+6. Après propagation des droits approuvés, relancer le même appel, puis
+   actualiser le Live Report. Vérifier la capacité et l'affectation de ses
+   espaces de travail, pas seulement le nombre total de capacités.
+
+Une capacité suspendue peut être retournée avec l'état `Inactive`; son absence
+ne prouve pas qu'elle est arrêtée. Ne pas la redémarrer pour tester sa
+visibilité. Si elle est présente dans la réponse brute mais absente du rapport,
+vérifier alors le parsing et les filtres du rapport.
+
+Référence : [Fabric Core — List capacities](https://learn.microsoft.com/en-us/rest/api/fabric/core/capacities/list-capacities).
+
 ### Fichier client
 
 ```powershell

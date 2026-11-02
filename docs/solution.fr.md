@@ -79,6 +79,16 @@ n’offre pas de backfill.
 
 ## 3. Sources, champs et permissions de l’inventaire des capacités
 
+Le tableau ci-dessous décrit les sources de l'inventaire collecté. Le Live
+Report utilise actuellement `FabricSRE_list_capacities` pour les capacités :
+Fabric Core ne retourne que celles accessibles à l'identité du connecteur
+comme administrateur ou contributeur, même lorsque Fabric Admin retourne des
+espaces de travail supplémentaires. Reader Azure ne suffit pas à garantir cette
+visibilité. Une alerte « capacité introuvable » peut donc signaler une limite
+de permissions, pas une ressource supprimée ou suspendue. Suivre la
+[procédure de permissions du connecteur](deployment.fr.md#visibilité-des-capacités-et-permissions-du-connecteur-fabric-core),
+sans accorder automatiquement de droits d'écriture.
+
 | Champ | Source primaire | Permission/contrôle | Statut et notes |
 |---|---|---|---|
 | Nom, ID, SKU | Power BI Admin `GET /admin/capacities` | Admin Fabric ou principal autorisé aux API admin en lecture seule | GA; 200 requêtes/h |

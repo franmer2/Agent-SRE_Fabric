@@ -232,6 +232,13 @@ At <https://sre.azure.com>:
 Azure SRE Agent supports up to 80 tools across all connectors. Do not select
 every tool by default.
 
+Before testing, follow the
+[capacity permissions and visibility checks](deployment.en.md#capacity-visibility-and-fabric-core-connector-permissions).
+Record the `FabricSRE` connector identity: Azure Reader does not guarantee its
+Fabric access to capacities. Any additional permission assignment requires
+approval and an audit; do not enter a managed identity name as an email address
+in the Fabric portal.
+
 ## D3. Test the connection
 
 1. Select **New chat thread**.
@@ -253,6 +260,11 @@ only workspaces accessible to your identity.
 
 If the call fails, return to **Builder > Connectors** and verify the status,
 URL, authentication, and selected tools.
+
+Also test `FabricSRE_list_capacities` without state filters, reading every page.
+A capacity missing from the raw response is an identity visibility issue, not
+a report issue. An `Inactive` capacity should remain visible when the identity
+has access; do not resume it for this test.
 
 ## D4. Start with guided prompts
 

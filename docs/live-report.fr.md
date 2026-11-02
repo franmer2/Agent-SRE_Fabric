@@ -34,6 +34,15 @@ Le Live Report appelle quatre outils en lecture seule :
 - `FabricAdmin_list_items`;
 - `FabricAdmin_get_cu_metrics`, lorsque Capacity Metrics est configuré.
 
+Ces sources n'ont pas nécessairement le même périmètre : Fabric Admin peut
+retourner un espace de travail dont la capacité n'est pas visible par l'identité
+du connecteur `FabricSRE`. Avant de modifier le rapport pour une alerte
+« capacité introuvable », vérifier la réponse brute paginée de
+`FabricSRE_list_capacities` et les
+[permissions du connecteur](deployment.fr.md#visibilité-des-capacités-et-permissions-du-connecteur-fabric-core).
+Le rôle Reader Azure seul ne garantit pas cette visibilité. Ne pas exclure
+les capacités `Inactive` ni les redémarrer pour les découvrir.
+
 Le parseur de réponses doit accepter les réponses structurées, les listes de
 blocs transmises directement sans enveloppe `content`, ainsi que les réponses
 textuelles avec ou sans séparateur avant les métadonnées `RequestId` et `Date`.

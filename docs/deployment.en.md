@@ -141,6 +141,57 @@ security group:
 Keep any action identity separate. Every write operation must retain human
 approval.
 
+### Capacity visibility and Fabric Core connector permissions
+
+A **Connected** `FabricSRE` connector does not guarantee complete inventory.
+`FabricSRE_list_capacities` uses Fabric Core `GET /v1/capacities`, which returns
+capacities accessible to the calling principal as an administrator or
+contributor. The connector's managed identity is not the account of the person
+viewing the portals.
+
+| Access | Scope |
+|---|---|
+| Azure Reader on the capacity, resource group, or subscription | ARM reads; does not guarantee visibility in Fabric Core |
+| Fabric permissions on the capacity | Determine `list_capacities` visibility; workspace access does not prove these permissions |
+| Read-only admin API authorization | Tenant inventory through Fabric Admin; does not replace Fabric Core permissions |
+
+For a missing capacity:
+
+1. In Azure SRE Agent, open **Build + setup / Builder > Connectors >
+   FabricSRE > Edit** and record the authentication method, selected managed
+   identity, and tenant. Do not change the `FabricAdmin` connector to fix the
+   Live Report's capacity inventory.
+2. Ask the agent for the raw `FabricSRE_list_capacities` response, without state
+   filters and including every page. Compare IDs, not just names, against the
+   expected inventory.
+3. Check that identity's permissions on each expected capacity. A complete
+   response omitting the capacity indicates an upstream visibility issue;
+   do not start by changing the report parser.
+4. For an F capacity, inspect the Azure resource under **Microsoft Fabric >
+   capacity > Capacity administrators**, separate from **Access control
+   (IAM)**. Use the available application/principal picker to identify the
+   identity. In Fabric, **Admin portal > Capacity settings > capacity >
+   Admin permissions** may reject its plain name with
+   `You can't use invalid or duplicate emails`. Do not invent an email
+   address; if the picker cannot resolve the identity, have an administrator
+   validate the supported assignment method.
+5. Obtain approval before applying any assignment and retain an audit:
+   identity, capacity, role, reason, approver, and date. Administrator and
+   contributor are not read-only roles. Do not grant them automatically just
+   to complete a counter; prefer a read-only admin inventory source when
+   those privileges are unacceptable. Keep only read tools in the agent
+   and mandatory approval for every action.
+6. After approved permissions propagate, repeat the same call, then reload
+   the Live Report. Verify the capacity and its workspace assignments, not
+   just the total capacity count.
+
+A suspended capacity can be returned with state `Inactive`; its absence does
+not prove that it is stopped. Do not resume it to test visibility. If it is
+present in the raw response but missing from the report, then check report
+parsing and filters.
+
+Reference: [Fabric Core — List capacities](https://learn.microsoft.com/en-us/rest/api/fabric/core/capacities/list-capacities).
+
 ### Client parameter file
 
 ```powershell
