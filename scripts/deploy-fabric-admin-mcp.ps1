@@ -7,7 +7,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
-$source = Join-Path $root "services\fabric-admin-mcp"
 $schemaPath = Join-Path $root "config\client.parameters.schema.json"
 
 $env:PYTHONPATH = Join-Path $root "src"
@@ -173,8 +172,9 @@ az acr build `
     --registry $RegistryName `
     --resource-group $ResourceGroup `
     --image "fabric-admin-mcp:$tag" `
+    --file "services/fabric-admin-mcp/Dockerfile" `
     --no-logs `
-    $source
+    $root
 if ($LASTEXITCODE -ne 0) { throw "Container image build failed." }
 
 $buildDeadline = (Get-Date).AddMinutes(15)

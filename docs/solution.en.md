@@ -109,6 +109,26 @@ References: [Capacity Metrics](https://learn.microsoft.com/en-us/fabric/enterpri
 
 ## 4. Data and retention
 
+### Automatic CU source discovery
+
+The `03_collect_capacity_metrics` notebook and Fabric Admin service discover
+dedicated capacities through `GET /admin/capacities`, then query the same
+Capacity Metrics model **one capacity at a time**, injecting the dynamic DAX
+`CapacitiesList` parameter. This avoids collecting only the default capacity
+or failing on a multi-capacity/region query.
+A newly authorized capacity is included on the next collection; the service's
+CU cache can delay visibility by five minutes. PPU reservations are not queried.
+The service exposes `requestedCapacityIds` and `unavailableCapacityIds`;
+a capacity with no source rows stays unavailable, not zero. API errors and
+truncation fail collection rather than publish an unmarked partial result.
+Identity permissions and source coverage are still required: no permissions
+are assigned automatically.
+
+The notebook retains Lakehouse history. The Live Report queries the Capacity
+Metrics model directly through `FabricAdmin_get_cu_metrics`, not the Gold
+tables; requesting 30 or 60 days does not extend that source's native retention.
+See the [CU adapters](../queries/capacity-metrics/README.en.md).
+
 Bronze stores raw timestamped API payloads. Inventory snapshots are appended;
 Activity Events uses an `Id`-based upsert so repeated 27-day backfills remain
 idempotent. Silver stores daily capacity snapshots, item-operation-user CU,

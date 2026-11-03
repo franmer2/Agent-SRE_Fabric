@@ -7,10 +7,16 @@ from urllib.parse import quote
 
 from azure.core.credentials import TokenCredential
 
+from fabric_sre.capacity_metrics import (
+    bind_capacity_query,
+    capacity_metrics_ids,
+    capacity_query_rows,
+)
 from fabric_sre.http import RestClient
 
 FABRIC_ROOT = "https://api.fabric.microsoft.com"
 POWER_BI_ROOT = "https://api.powerbi.com"
+POWER_BI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
 ARM_ROOT = "https://management.azure.com"
 
 
@@ -46,7 +52,7 @@ def collect_fabric_inventory(
 ) -> dict[str, list[dict[str, Any]]]:
     now = collected_at or datetime.now(UTC)
     fabric_client = RestClient(credential, f"{FABRIC_ROOT}/.default")
-    power_bi_client = RestClient(credential, f"{POWER_BI_ROOT}/.default")
+    power_bi_client = RestClient(credential, POWER_BI_SCOPE)
     headers = {"x-ms-fabric-skill": "fabric-sre-accelerator"}
 
     capacities = list(
@@ -81,7 +87,7 @@ def collect_powerbi_activity_events(
         f"startDateTime='{quote(_power_bi_timestamp(start))}'"
         f"&endDateTime='{quote(_power_bi_timestamp(end))}'"
     )
-    client = RestClient(credential, f"{POWER_BI_ROOT}/.default")
+    client = RestClient(credential, POWER_BI_SCOPE)
     rows = client.paginate(
         f"{POWER_BI_ROOT}/v1.0/myorg/admin/activityevents?{query}",
         items_key="activityEventEntities",
@@ -120,29 +126,31 @@ def execute_capacity_metrics_queries(
             "fabric.capacityMetrics.semanticModelId is required when capacity metrics collection is enabled"
         )
     now = collected_at or datetime.now(UTC)
-    client = RestClient(credential, f"{POWER_BI_ROOT}/.default")
-    result: dict[str, list[dict[str, Any]]] = {}
+    client = RestClient(credential, POWER_BI_SCOPE)
+    capacities = list(client.paginate(f"{POWER_BI_ROOT}/v1.0/myorg/admin/capacities"))
+    capacity_ids = capacity_metrics_ids(capacities)
+    result: dict[str, list[dict[str, Any]]] = {name: [] for name in queries}
     url = f"{POWER_BI_ROOT}/v1.0/myorg/datasets/{semantic_model_id}/executeQueries"
 
-    for target_table, dax in queries.items():
-        payload = client.request(
-            "POST",
-            url,
-            json={
-                "queries": [{"query": dax}],
-                "serializerSettings": {"includeNulls": True},
-            },
-            headers={"Content-Type": "application/json"},
-        ).json()
-        try:
-            rows = payload["results"][0]["tables"][0]["rows"]
-        except (KeyError, IndexError, TypeError) as error:
-            raise RuntimeError(
-                f"Capacity Metrics query '{target_table}' returned an unexpected payload: {payload}"
-            ) from error
-        result[target_table] = _stamp(
-            _normalize_dax_rows(rows),
-            "Capacity Metrics semantic model ExecuteQueries",
-            now,
-        )
+    for capacity_id in capacity_ids:
+        for target_table, dax in queries.items():
+            payload = client.request(
+                "POST",
+                url,
+                json={
+                    "queries": [{"query": bind_capacity_query(dax, capacity_id)}],
+                    "serializerSettings": {"includeNulls": True},
+                },
+                headers={"Content-Type": "application/json"},
+            ).json()
+            rows = _normalize_dax_rows(capacity_query_rows(payload))
+            for row in rows:
+                returned_id = row.get("CapacityId")
+                if returned_id is not None and str(returned_id).lower() != capacity_id:
+                    raise RuntimeError(
+                        f"Capacity Metrics returned {returned_id} while querying {capacity_id}."
+                    )
+            result[target_table].extend(
+                _stamp(rows, "Capacity Metrics semantic model ExecuteQueries", now)
+            )
     return result

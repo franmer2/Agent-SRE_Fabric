@@ -1,0 +1,10 @@
+**
+!services/
+!services/fabric-admin-mcp/
+!services/fabric-admin-mcp/Dockerfile
+!services/fabric-admin-mcp/requirements.txt
+!services/fabric-admin-mcp/server.py
+!src/
+!src/fabric_sre/
+!src/fabric_sre/__init__.py
+!src/fabric_sre/capacity_metrics.py

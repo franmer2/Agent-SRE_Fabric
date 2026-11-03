@@ -17,6 +17,12 @@ from mcp.server.transport_security import TransportSecuritySettings
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from fabric_sre.capacity_metrics import (
+    bind_capacity_query,
+    capacity_metrics_ids,
+    capacity_query_rows,
+)
+
 FABRIC_ROOT = "https://api.fabric.microsoft.com"
 FABRIC_SCOPE = f"{FABRIC_ROOT}/.default"
 POWER_BI_ROOT = "https://api.powerbi.com"
@@ -268,9 +274,9 @@ def _dax_value(row: dict[str, Any], column_name: str) -> Any:
     return None
 
 
-def _capacity_metrics_query(period_days: int) -> str:
+def _capacity_metrics_query(period_days: int, capacity_id: str) -> str:
     offset_days = period_days - 1
-    return f"""
+    query = f"""
 DEFINE
   VAR _LastDate =
     CALCULATE(
@@ -295,6 +301,28 @@ EVALUATE
   )
 ORDER BY [CuSeconds] DESC
 """.strip()
+    return bind_capacity_query(query, capacity_id)
+
+
+async def _capacity_metrics_inventory() -> list[str]:
+    capacities: list[dict[str, Any]] = []
+    path: str | None = "/v1.0/myorg/admin/capacities"
+    visited: set[str] = set()
+    while path:
+        if path in visited or len(visited) >= MAX_PAGES:
+            raise FabricAdminError("Capacity inventory pagination did not terminate.")
+        visited.add(path)
+        payload = await _power_bi_request("GET", path)
+        rows = payload.get("value") if isinstance(payload, dict) else None
+        if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+            raise FabricAdminError("Capacity inventory must contain a value list of objects.")
+        capacities.extend(rows)
+        path = payload.get("@odata.nextLink") or payload.get("nextLink")
+        if path is not None and not isinstance(path, str):
+            raise FabricAdminError("Capacity inventory has an invalid next link.")
+        if path and not path.startswith(f"{POWER_BI_ROOT}/"):
+            raise FabricAdminError("Capacity inventory next link has an unexpected origin.")
+    return capacity_metrics_ids(capacities)
 
 
 async def _load_cu_metrics(period_days: int) -> dict[str, Any]:
@@ -325,22 +353,25 @@ async def _load_cu_metrics(period_days: int) -> dict[str, Any]:
                 "FABRIC_CAPACITY_METRICS_MODEL_ID is not configured."
             )
 
-        response = await _power_bi_request(
-            "POST",
-            f"/v1.0/myorg/datasets/{semantic_model_id}/executeQueries",
-            json={
-                "queries": [{"query": _capacity_metrics_query(period_days)}],
-                "serializerSettings": {"includeNulls": True},
-            },
-        )
-        try:
-            dax_rows = response["results"][0]["tables"][0]["rows"]
-        except (KeyError, IndexError, TypeError) as error:
-            raise FabricAdminError(
-                "Capacity Metrics returned an unexpected ExecuteQueries payload."
-            ) from error
-        if not isinstance(dax_rows, list):
-            raise FabricAdminError("Capacity Metrics rows are not a list.")
+        capacity_ids = await _capacity_metrics_inventory()
+        dax_rows: list[dict[str, Any]] = []
+        for capacity_id in capacity_ids:
+            response = await _power_bi_request(
+                "POST",
+                f"/v1.0/myorg/datasets/{semantic_model_id}/executeQueries",
+                json={
+                    "queries": [{"query": _capacity_metrics_query(period_days, capacity_id)}],
+                    "serializerSettings": {"includeNulls": True},
+                },
+            )
+            rows = capacity_query_rows(response)
+            for row in rows:
+                returned_id = _dax_value(row, "Capacity Id")
+                if not returned_id or str(returned_id).lower() != capacity_id:
+                    raise FabricAdminError(
+                        f"Capacity Metrics returned {returned_id!r} while querying {capacity_id}."
+                    )
+            dax_rows.extend(rows)
 
         item_totals: dict[tuple[str, str, str], float] = {}
         workspace_totals: dict[tuple[str, str], float] = {}
@@ -360,8 +391,9 @@ async def _load_cu_metrics(period_days: int) -> dict[str, Any]:
             cu_seconds = float(_dax_value(dax_row, "CuSeconds") or 0)
             metric_date_value = _dax_value(dax_row, "Date")
             row_through_date = _dax_value(dax_row, "ThroughDate")
-            if row_through_date and through_date is None:
-                through_date = datetime.fromisoformat(str(row_through_date))
+            if row_through_date:
+                date_value = datetime.fromisoformat(str(row_through_date))
+                through_date = max(through_date, date_value) if through_date else date_value
             if (
                 not capacity_id
                 or not workspace_id
@@ -420,6 +452,10 @@ async def _load_cu_metrics(period_days: int) -> dict[str, Any]:
             ),
             "throughDate": through_date.date().isoformat() if through_date else None,
             "collectedAtUtc": collected_at.isoformat(),
+            "requestedCapacityIds": capacity_ids,
+            "unavailableCapacityIds": [
+                capacity_id for capacity_id in capacity_ids if capacity_id not in capacity_totals
+            ],
             "items": [
                 {
                     "capacityId": capacity_id,
@@ -828,8 +864,8 @@ async def get_cu_metrics(
     """Return read-only CU metrics and optional daily time series.
 
     Supported periods are 7, 14, 30, and 60 days. Capacity Metrics currently
-    retains approximately 14 days; longer periods grow as daily history is
-    collected into the Fabric SRE Lakehouse.
+    retains approximately 14 days. This tool queries the source model, not
+    the separate historical tables collected into the Fabric SRE Lakehouse.
     """
     if period_days not in {7, 14, 30, 60}:
         raise ValueError("period_days must be one of 7, 14, 30, or 60.")

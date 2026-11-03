@@ -112,6 +112,27 @@ Références : [Capacity Metrics](https://learn.microsoft.com/en-us/fabric/enter
 
 ## 4. Données, rétention et schéma
 
+### Découverte automatique des sources CU
+
+Le notebook `03_collect_capacity_metrics` et le service Fabric Admin découvrent
+les capacités dédiées via `GET /admin/capacities`, puis interrogent le même
+modèle Capacity Metrics **une capacité à la fois** en injectant le paramètre
+DAX dynamique `CapacitiesList`. Cela évite de collecter uniquement la capacité
+par défaut ou d'échouer sur une requête multi-capacités/régions.
+Une nouvelle capacité autorisée est prise en compte à la collecte suivante;
+le cache CU du service peut retarder sa visibilité de cinq minutes.
+Les réservations PPU ne sont pas interrogées. Le service expose
+`requestedCapacityIds` et `unavailableCapacityIds`; une capacité sans ligne
+source reste indisponible, pas à zéro. Toute erreur API ou troncature fait
+échouer la collecte plutôt que publier un résultat partiel non signalé.
+Les droits de l'identité et la couverture de la source restent requis :
+aucune permission n'est attribuée automatiquement.
+
+Le notebook conserve l'historique dans le Lakehouse. Le Live Report interroge
+directement le modèle Capacity Metrics via `FabricAdmin_get_cu_metrics`, pas
+les tables Gold; une demande de 30 ou 60 jours ne prolonge donc pas la
+rétention native de cette source. Voir les [adaptateurs CU](../queries/capacity-metrics/README.fr.md).
+
 ### Bronze
 
 - `bronze_fabric_capacities`, `bronze_fabric_workspaces`,

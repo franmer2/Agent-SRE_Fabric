@@ -7,10 +7,11 @@ WORKDIR /app
 
 RUN groupadd --system app && useradd --system --gid app app
 
-COPY requirements.txt .
+COPY services/fabric-admin-mcp/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server.py .
+COPY services/fabric-admin-mcp/server.py .
+COPY src/fabric_sre/__init__.py src/fabric_sre/capacity_metrics.py ./fabric_sre/
 
 USER app
 EXPOSE 8000

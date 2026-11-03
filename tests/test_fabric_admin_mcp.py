@@ -8,6 +8,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self
 
+import pytest
+
 
 def _load_server() -> ModuleType:
     path = (
@@ -266,6 +268,9 @@ def test_get_cu_metrics_aggregates_all_levels(monkeypatch: Any) -> None:
         params: dict[str, str] | None = None,
         json: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        if method == "GET":
+            assert path == "/v1.0/myorg/admin/capacities"
+            return {"value": [{"id": "cap-one", "sku": "F8"}]}
         assert method == "POST"
         assert path.endswith("/datasets/model-one/executeQueries")
         assert params is None
@@ -382,6 +387,68 @@ def test_get_cu_metrics_rejects_unsupported_period() -> None:
         assert str(error) == "period_days must be one of 7, 14, 30, or 60."
     else:
         raise AssertionError("Unsupported period should fail.")
+
+
+def test_get_cu_metrics_discovers_and_queries_each_capacity(monkeypatch: Any) -> None:
+    server = _load_server()
+    queried: list[str] = []
+
+    async def fake_request(method: str, path: str, **kwargs: Any) -> dict[str, Any]:
+        if method == "GET":
+            if path.endswith("/admin/capacities"):
+                return {
+                    "value": [{"id": "cap-old", "sku": "F16"}],
+                    "@odata.nextLink": f"{server.POWER_BI_ROOT}/next-capacities",
+                }
+            return {"value": [
+                {"id": "cap-new", "sku": "F8"},
+                {"id": "cap-empty", "sku": "FTL64"},
+                {"id": "ppu", "sku": "PP3"},
+            ]}
+        query = kwargs["json"]["queries"][0]["query"]
+        capacity_id = next(
+            candidate for candidate in ("cap-old", "cap-new", "cap-empty")
+            if f'{{"{candidate}"}}' in query
+        )
+        queried.append(capacity_id)
+        rows = [] if capacity_id == "cap-empty" else [{
+            "[Capacity Id]": capacity_id,
+            "[Workspace Id]": f"ws-{capacity_id}",
+            "[Item Id]": f"item-{capacity_id}",
+            "[Date]": "2026-10-11T00:00:00",
+            "[ThroughDate]": "2026-10-11T00:00:00",
+            "[CuSeconds]": 20 if capacity_id == "cap-new" else 10,
+        }]
+        return {"results": [{"tables": [{"rows": rows}]}]}
+
+    monkeypatch.setenv("FABRIC_CAPACITY_METRICS_MODEL_ID", "model")
+    monkeypatch.setattr(server, "_power_bi_request", fake_request)
+    result = asyncio.run(server.get_cu_metrics())
+    assert queried == ["cap-empty", "cap-new", "cap-old"]
+    assert result["requestedCapacityIds"] == queried
+    assert result["unavailableCapacityIds"] == ["cap-empty"]
+    assert {row["capacityId"]: row["cuSeconds"] for row in result["capacities"]} == {
+        "cap-old": 10,
+        "cap-new": 20,
+    }
+
+
+def test_get_cu_metrics_does_not_cache_partial_results(monkeypatch: Any) -> None:
+    server = _load_server()
+
+    async def fake_request(method: str, path: str, **kwargs: Any) -> dict[str, Any]:
+        if method == "GET":
+            return {"value": [{"id": "cap-one", "sku": "F8"}]}
+        return {"results": [{
+            "error": {"message": "Query result truncated"},
+            "tables": [{"rows": []}],
+        }]}
+
+    monkeypatch.setenv("FABRIC_CAPACITY_METRICS_MODEL_ID", "model")
+    monkeypatch.setattr(server, "_power_bi_request", fake_request)
+    with pytest.raises(RuntimeError, match="truncated"):
+        asyncio.run(server.get_cu_metrics())
+    assert not server._cu_cache
 
 
 def test_get_cu_metrics_requires_complete_entity_scope() -> None:
